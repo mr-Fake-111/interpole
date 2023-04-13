@@ -7,10 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.paint.Color
 import javafx.scene.shape.Line
 import javafx.stage.Stage
-import src_current.Interpolator
-import src_current.NodeGenerator
-import src_current.TableGenerator
-import src_current.UserFunction
+import src_current.*
 
 class App: Application() {
 
@@ -34,7 +31,7 @@ class App: Application() {
             )
         }
 
-        val standNodes = NodeGenerator.getStandartNodes(-10.0, 10.0, 10) //задание узлов для полинома лагранжа/Ньютона
+        val standNodes = NodeGenerator.getStandartNodes(-5.0, 5.0, 30) //задание узлов для полинома лагранжа/Ньютона
         //при вычислении сплайнов лажают методы СЛАУ (видимо, конвертация некорректная вышла, но дебажить я уже не успею). При >10 узлах почти всегда нормально работает
         val standProperties = UserFunction.getNodes(standNodes)
 
@@ -43,16 +40,16 @@ class App: Application() {
 
         val polys = Interpolator.interpolationSplineSquare(optProperties)
 
-        //graphByNodes(group, standProperties, WIDGTH, HEIGHT, "Newton") //построение графика интерполяционного полинома Ньютона/Лагранжа
-        //graphByNodes(group, TableGenerator.getTableLineByNodes(standProperties, "Newton").toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
+        graphByNodes(group, standProperties, WIDGTH, HEIGHT, "Newton") //построение графика интерполяционного полинома Ньютона/Лагранжа
+        graphByNodes(group, TableGenerator.getTableLineByNodes(standProperties, "Newton").toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
 
         //graphByNodesSplineLinear(group, standProperties, WIDGTH, HEIGHT) //Построение линейного сплайна
 
-        graphByNodesSplineSquare(group, optProperties, WIDGTH, HEIGHT) //посторение квадратичного сплайна
+        //graphByNodesSplineSquare(group, optProperties, WIDGTH, HEIGHT) //посторение квадратичного сплайна
 
         //graphByNodesSplineCubic(group, standProperties, WIDGTH, HEIGHT) //построение кубического сплайна
 
-        graphByNodes(group, TableGenerator.getTableLineByNodesSpline(optProperties, polys).toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
+        //graphByNodes(group, TableGenerator.getTableLineByNodesSpline(optProperties, polys).toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
 
         primaryStage?.scene = scene
         primaryStage?.show()
@@ -172,10 +169,78 @@ fun main(args: Array<String>) {
     println()*/
 
     //вывод для штрафного задания
-    val standNodes = NodeGenerator.getStandartNodes(-10.0, 10.0, 20)
-    val standProperties = UserFunction.getNodes(standNodes)
 
-    val optNodes = NodeGenerator.getOptimalNodes(-10.0, 10.0, 10)
-    val optProperties = UserFunction.getNodes(optNodes)
+    println("Header: Spline Square 2.0 Standart\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        val polys = Interpolator.interpolationSplineSquareAlternative(properties)
+        TableGenerator.getTableLineByNodesSpline(properties, polys)
 
+    }
+    println()
+
+    println("Header: Spline Square 2.0 Optimal\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getOptimalNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        val polys = Interpolator.interpolationSplineSquareAlternative(properties)
+        TableGenerator.getTableLineByNodesSpline(properties, polys)
+
+    }
+    println()
+
+    println("Header: Newton Alternative Standart\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        TableGenerator.getTableLineByNodes(properties, "Newton_alternative")
+
+    }
+    println()
+
+    println("Header: Newton Alternative Optimal\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getOptimalNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        TableGenerator.getTableLineByNodes(properties, "Newton_alternative")
+
+    }
+    println()
+
+    println("Header: SLAE Standart\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        val poly = arrayOf<Polynomial>( Interpolator.interpolationPolynomialSLAE(properties))
+        TableGenerator.getTableLineByNodesSLAE(properties, poly)
+    }
+    println()
+
+    println("Header: SLAE Optimal\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getOptimalNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        val poly = arrayOf<Polynomial>( Interpolator.interpolationPolynomialSLAE(properties))
+        TableGenerator.getTableLineByNodesSLAE(properties, poly)
+    }
+    println()
+
+    println("Header: SLAE Alternative Standart nodes formula\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        TableGenerator.getTableLineByNodes(properties, "Newton_alternative", "standart")
+
+    }
+    println()
+
+    println("Header: SLAE Optimal nodes formula\n")
+    for(i in 10..80) {
+        val nodes = NodeGenerator.getOptimalNodes(-5.0, 5.0, i)
+        val properties = UserFunction.getNodes(nodes)
+        TableGenerator.getTableLineByNodes(properties, "Newton_alternative", "optimal")
+
+    }
+    println()
 }
