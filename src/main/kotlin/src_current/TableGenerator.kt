@@ -9,7 +9,7 @@ class TableGenerator {
 
             val  n = nodes.size
 
-            if(!(polyType in arrayOf("Newton", "Lagrange"))) {
+            if(!(polyType in arrayOf("Newton", "Lagrange", "Newton_alternative"))) {
                 print("Incorrect poly type")
                 return MutableList<DoubleArray>(0) { DoubleArray(0) }
             }
@@ -26,6 +26,7 @@ class TableGenerator {
                     when (polyType) {
                         "Newton" -> midSpots[midSpots.size-1][1] = Interpolator.interpolationPolynomialNewton(nodes, midSpots[midSpots.size-1][0])
                         "Lagrange" -> midSpots[midSpots.size-1][1] = Interpolator.interpolationPolynomialLagrange(nodes, midSpots[midSpots.size-1][0])
+                        "Newton_alternative" -> midSpots[midSpots.size-1][1] = Interpolator.interpolationPolynomialNewtonAlternative(nodes, midSpots[midSpots.size-1][0])
                     }
                     j+=0.01
                 }

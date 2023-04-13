@@ -82,6 +82,35 @@ class Interpolator {
             return spotVal
         }
 
+        fun interpolationPolynomialNewtonAlternative(nodes: Array<DoubleArray>, spot: Double): Double {
+
+            val spotVal = 0
+            val devidedSubtracts = mutableListOf<MutableList<Double>>()
+
+            devidedSubtracts.add(MutableList<Double>(nodes.size) {0.0})
+            for(i in nodes.indices) {
+                devidedSubtracts[0][i] = nodes[i][1]
+            }
+
+            for(i in 1 until nodes.size) {
+                devidedSubtracts.add(MutableList<Double>(nodes.size - i) {0.0})
+                for(j in 0 until nodes.size - i) {
+                    devidedSubtracts[i][j] = (devidedSubtracts[i-1][j+1] - devidedSubtracts[i-1][j])/(nodes[j+i][0] - nodes[j][0])
+                }
+            }
+
+            var resultValue = 0.0
+            for(i in devidedSubtracts.indices) {
+                var curSum = devidedSubtracts[i][0]
+                for(j in 0 until i) {
+                    curSum *= (spot - nodes[j][0])
+                }
+                resultValue += curSum
+            }
+
+            return resultValue
+        }
+
         // построение полиномов линейного сплайна по заанным узлам
         fun interpolationSplineLinear(nodes: Array<DoubleArray>): Array<Polynomial> {
 
@@ -102,6 +131,7 @@ class Interpolator {
             return polys
         }
 
+        //построение полиномов квадратичного сплайна
         fun interpolationSplineSquare(nodes: Array<DoubleArray>): Array<Polynomial> {
 
             //val coefficients: DoubleArray = DoubleArray(2 * (nodes.size - 1)) { 0.0 }
@@ -142,6 +172,41 @@ class Interpolator {
 
         }
 
+        fun interpolationSplineSquareAlternative(nodes: Array<DoubleArray>): Array<Polynomial> {
+
+            var matrix = Array<DoubleArray>(3*(nodes.size-1)) { DoubleArray(3*(nodes.size-1)) {0.0} }
+            var vector = Array<DoubleArray>(3*(nodes.size-1)) {DoubleArray(1) {0.0} }
+
+            for(i in 0..3*(nodes.size-1) -1 step 3) {
+
+                for(j in 0..2) {
+                    matrix[i][i+j] = nodes[i / 3][0].pow(2-j)
+                    matrix[i+1][i+j] = nodes[i/3 + 1][0].pow(2-j)
+                }
+                matrix[i+2][i]  = 2*nodes[i/3 + 1][0]
+                matrix[i+2][i+1]  = 1.0
+
+                vector[i][0] = nodes[i/3][1]
+                vector[i+1][0] = nodes[i/3 + 1][1]
+
+            }
+
+            val preCoefficients = SLAEAccurateMethods.GaussMethod(matrix, vector)
+            val coefficients = MutableList<Double>(preCoefficients.size) { 0.0 }
+            for (i in 0..(preCoefficients.size - 1)) {
+                coefficients[i] = preCoefficients[i][0]
+            }
+
+            val polys = Array<Polynomial>(nodes.size - 1) { Polynomial() }
+            for (i in 0..nodes.size - 2) {
+                polys[i].coefficients = mutableListOf(coefficients[3 * i], coefficients[3 * i + 1], coefficients[3*i + 2])
+            }
+
+            return polys
+
+        }
+
+        //построение полиномов кубического сплайна
         fun interpolationSplineCubic(nodes: Array<DoubleArray>): Array<Polynomial> {
 
             val n = nodes.size

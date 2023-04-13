@@ -34,23 +34,23 @@ class App: Application() {
             )
         }
 
-        val standNodes = NodeGenerator.getStandartNodes(-10.0, 10.0, 20) //задание узлов для полинома лагранжа/Ньютона
+        val standNodes = NodeGenerator.getStandartNodes(-10.0, 10.0, 10) //задание узлов для полинома лагранжа/Ньютона
         //при вычислении сплайнов лажают методы СЛАУ (видимо, конвертация некорректная вышла, но дебажить я уже не успею). При >10 узлах почти всегда нормально работает
         val standProperties = UserFunction.getNodes(standNodes)
 
-        val optNodes = NodeGenerator.getOptimalNodes(-10.0, 10.0, 10) //задание узлов для полинома лагранжа/Ньютона
+        val optNodes = NodeGenerator.getOptimalNodes(-10.0, 10.0, 40) //задание узлов для полинома лагранжа/Ньютона
         val optProperties = UserFunction.getNodes(optNodes)
 
-        val polys = Interpolator.interpolationSplineCubic(optProperties)
+        val polys = Interpolator.interpolationSplineSquare(optProperties)
 
         //graphByNodes(group, standProperties, WIDGTH, HEIGHT, "Newton") //построение графика интерполяционного полинома Ньютона/Лагранжа
         //graphByNodes(group, TableGenerator.getTableLineByNodes(standProperties, "Newton").toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
 
         //graphByNodesSplineLinear(group, standProperties, WIDGTH, HEIGHT) //Построение линейного сплайна
 
-        //graphByNodesSplineSquare(group, optProperties, WIDGTH, HEIGHT) //посторение квадратичного сплайна
+        graphByNodesSplineSquare(group, optProperties, WIDGTH, HEIGHT) //посторение квадратичного сплайна
 
-        graphByNodesSplineCubic(group, standProperties, WIDGTH, HEIGHT) //построение кубического сплайна
+        //graphByNodesSplineCubic(group, standProperties, WIDGTH, HEIGHT) //построение кубического сплайна
 
         graphByNodes(group, TableGenerator.getTableLineByNodesSpline(optProperties, polys).toTypedArray(), WIDGTH, HEIGHT, "Mismatch")
 
@@ -70,6 +70,7 @@ fun main(args: Array<String>) {
     val app = App()
     app.launchApp()
 
+    //вывод для полномов ньютона и Лагранжа (без штрафного задания)
     /*println("Header: Newton Standart\n")
         for(i in 10..80) {
            val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
@@ -108,6 +109,8 @@ fun main(args: Array<String>) {
 
     /////////////////////////////////////////////////
 
+    //вывод для сплайнов............
+    /*
     println("Header: Spline Linear Standart\n")
     for(i in 10..80) {
         val nodes = NodeGenerator.getStandartNodes(-5.0, 5.0, i)
@@ -166,5 +169,13 @@ fun main(args: Array<String>) {
         TableGenerator.getTableLineByNodesSpline(properties, polys)
 
     }
-    println()
+    println()*/
+
+    //вывод для штрафного задания
+    val standNodes = NodeGenerator.getStandartNodes(-10.0, 10.0, 20)
+    val standProperties = UserFunction.getNodes(standNodes)
+
+    val optNodes = NodeGenerator.getOptimalNodes(-10.0, 10.0, 10)
+    val optProperties = UserFunction.getNodes(optNodes)
+
 }

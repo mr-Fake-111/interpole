@@ -24,14 +24,26 @@ fun graphByNodes(group: Group, properties: Array<DoubleArray>, widgth:Double, he
                 line
             )
         }
-    }
-    else if(polyType == "Lagrange") {
+    } else if(polyType == "Lagrange") {
         for (i in (-widgth / 2).toInt() / 5..((widgth / 2).toInt() - 1) / 5) { //выводим график для Ньютона по стандартным узлам
             val line = Line(
                 i * 5 + widgth / 2,
                 -1 * 5 * Interpolator.interpolationPolynomialLagrange(properties, i.toDouble()) + height / 2,
                 (i + 1) * 5 + widgth / 2,
                 -1 * 5 * Interpolator.interpolationPolynomialLagrange(properties, (1 + i).toDouble()) + height / 2
+            )
+            line.stroke = Color.RED
+            group.children.add(
+                line
+            )
+        }
+    } else if(polyType == "Newton_alternative") {
+        for (i in (-widgth / 2).toInt() / 5..((widgth / 2).toInt() - 1) / 5) { //выводим график для Ньютона
+            val line = Line(
+                i * 5 + widgth / 2,
+                -1 * 5 * Interpolator.interpolationPolynomialNewtonAlternative(properties, i.toDouble()) + height / 2,
+                (i + 1) * 5 + widgth / 2,
+                -1 * 5 * Interpolator.interpolationPolynomialNewtonAlternative(properties, (1 + i).toDouble()) + height / 2
             )
             line.stroke = Color.RED
             group.children.add(
